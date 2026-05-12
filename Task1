@@ -1,0 +1,46 @@
+/.The project begins by importing essential libraries such as Pandas for data handling and Matplotlib for visualization. e dataset is then loaded into the program, 
+and initial exploration is performed by displaying the first few rows, column names, and checking for missing values.During preprocessing, unnecessary columns like
+ID, Name, Coach Number, and Date are removed to improve model efficiency. Categorical data is converted into numerical format using One-Hot Encoding so that the 
+machine learning algorithm can process the data effectively.Finally, histograms are generated to visualize the distribution of the dataset features. This project
+demonstrates the complete workflow of a machine learning pipeline, including data preprocessing, model training, prediction, evaluation, and visualization./
+
+# STEP 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+#STEP 2: Load dataset (make sure file is uploaded in colab)
+df= pd.read_csv("/content/dataset (1).zip")
+df.head()
+print("First 5 rows:")
+print(df.head())
+print("\nColumns:")
+print(df.columns)
+print("\nMissing values:")
+print(df.isnull().sum())
+# STEP 3: Data Cleaning & Preprocessing
+df = df.drop(["ID", "Name", "Coach Number", "Date"], axis=1, errors='ignore')
+# Convert categorical to numerical
+df = pd.get_dummies(df)
+print("\nAfter preprocessing:")
+print(df.head())
+# STEP 4: Feature Selection
+# Automatically find target column (Complain)
+target_column = [col for col in df.columns if "Complain" in col][0]
+X = df.drop(target_column, axis=1)
+y = df[target_column]
+print("\nTarget column:", target_column)
+# STEP 5: Train-Test Split
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.2, random_state=42)
+# STEP 6: Model Training
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+# STEP 7: Prediction
+y_pred = model.predict(X_test)
+# STEP 8: Evaluation
+from sklearn.metrics import accuracy_score, confusion_matrix
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+# STEP 9: Visualization
+df.hist(figsize=(10,8))
+plt.show()
